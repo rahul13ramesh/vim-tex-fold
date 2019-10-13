@@ -106,7 +106,7 @@ function! TeXFoldText()
         let pattern = '^[^{]*{' . '{{\([.]*\)'
         let repl = '\1'
     endif
-    let line = strpart(substitute(fold_line, pattern, repl, '') . ' ', 0, 30)
+    let line = strpart(substitute(fold_line, pattern, repl, '') . ' ', 0, 48)
 
 	let lines_count = v:foldend - v:foldstart + 1
 	let lines_count_text = '[' . printf("%4s", lines_count . s:small_l) . ']'
