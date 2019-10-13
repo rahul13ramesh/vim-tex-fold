@@ -89,23 +89,35 @@ function! TeXFold(lnum)
     return '='
 endfunction
 
-function! TeXFoldText()
+function! TeXFoldText() 
+
+	let s:middot='·'
+	let s:raquo='»'
+	let s:small_l='ℓ'
     let fold_line = getline(v:foldstart)
 
     if fold_line =~ '^\s*\\\(sub\)*section'
         let pattern = '\\\(sub\)*section\*\={\([^}]*\)}'
-        let repl = ' ' . g:tex_fold_sec_char . ' \2'
+        let repl = '' . g:tex_fold_sec_char . ' \2'
     elseif fold_line =~ '^\s*\\begin'
         let pattern = '\\begin{\([^}]*\)}'
-        let repl = ' ' . g:tex_fold_env_char . ' \1'
+        let repl = '' . g:tex_fold_env_char . ' \1'
     elseif fold_line =~ '^[^%]*%[^{]*{{{'
         let pattern = '^[^{]*{' . '{{\([.]*\)'
         let repl = '\1'
     endif
+    let line = strpart(substitute(fold_line, pattern, repl, '') . ' ', 0, 30)
 
-    let line = substitute(fold_line, pattern, repl, '') . ' '
-    return '+' . v:folddashes . line
+	let lines_count = v:foldend - v:foldstart + 1
+	let lines_count_text = '[' . printf("%4s", lines_count . s:small_l) . ']'
+	let foldtextend = lines_count_text . repeat(" ", 8)
+	let foldtextstart = strpart(s:raquo . repeat(" ", v:foldlevel*2) . line , 0, (60*2)/3)
+	let foldtextlength = strlen(substitute(line . foldtextend, '.', 'x', 'g')) + &foldcolumn
+
+	return foldtextstart . repeat(s:middot, 60-foldtextlength) . foldtextend . repeat(" ", 1000)
+
 endfunction
+
 
 "}}}
 "{{{ Undo
